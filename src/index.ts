@@ -1,7 +1,7 @@
 import express from 'express'
 
 const app = express()
-const port = process.env.PORT || 3000
+const port = 3000
 
 const HTTP_STATUSES = {
   OK_200: 200,
@@ -87,6 +87,6 @@ app.delete('/brothers/:id', (req, res) => {
 })
 
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0',() => {
   console.log(`backend was started on port ${port}`)
 }) 
