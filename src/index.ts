@@ -1,9 +1,9 @@
 import express from 'express'
 
-const app = express()
+export const app = express()
 const port = 3000
 
-const HTTP_STATUSES = {
+export const HTTP_STATUSES = {
   OK_200: 200,
   CREATED_201: 201,
   NO_CONTENT_204: 204,
@@ -15,7 +15,7 @@ const HTTP_STATUSES = {
 const jsonBodyMiddleware = express.json()
 app.use(jsonBodyMiddleware)
 
-const db = {
+export const db = {
   courses: [
     { id: 1, title: 'Roman' },
     { id: 2, title: 'Sergey' },
@@ -45,6 +45,7 @@ app.get('/brothers/:id', (req, res) => {
 })
 
 app.post('/brothers', (req, res) => {
+  
   if (!req.body.title){
     res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
     return 
@@ -59,21 +60,14 @@ app.post('/brothers', (req, res) => {
 })
 
 app.put('/brothers/:id', (req, res) => {
+  const bro = db.courses.find(c => c.id === +req.params.id)
 
-  if (!req.body.title) {
-    res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
-    return
+  if (bro) {
+    bro.title = req.body.title
+    res.send(bro)
+  } else {
+    res.send(HTTP_STATUSES.NOT_FOUND_404)
   }
-  const foundCourse = db.courses.find(c => c.id === +req.params.id)
-
-  if (!foundCourse) {
-    res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
-    return
-  }
-
-  foundCourse.title = req.body.title
-
-  res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 })
 
 app.delete('/brothers/:id', (req, res) => {
@@ -83,6 +77,11 @@ app.delete('/brothers/:id', (req, res) => {
   }
   db.courses = db.courses.filter(c => c.id !== +req.params.id)
 
+  res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+})
+
+app.delete('/__test__/data', (req, res) => {
+  db.courses = []
   res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 })
 
