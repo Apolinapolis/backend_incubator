@@ -36,6 +36,13 @@ export const db: {courses: DataBaseType[]} = {
   ]
 }
 
+const getBroViewModel = (bro:DataBaseType): ViewBroModel => {
+  return {
+    id: bro.id,
+    title: bro.title
+  }
+}
+
 
 app.get('/brothers', (req:RequestWithQuery<GetBroModel>, res:Response<ViewBroModel[]>) => {
   
@@ -43,12 +50,7 @@ app.get('/brothers', (req:RequestWithQuery<GetBroModel>, res:Response<ViewBroMod
   if (req.query.title) {
     foundCourses = foundCourses.filter(c => c.title.indexOf(req.query.title) > -1)
   }
-  res.json(foundCourses.map(dbBro => {
-    return {
-      id: dbBro.id,
-      title: dbBro.title
-    }
-  })) 
+  res.json(foundCourses.map(getBroViewModel)) 
 })
 
 app.get('/brothers/:id', (req:RequestWithParams<URIparamId>, res:Response<ViewBroModel>) => {
