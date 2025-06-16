@@ -1,8 +1,9 @@
 import request from 'supertest'
-import { app, HTTP_STATUSES } from '../../src/app'
+import { app } from '../../src/app'
 import { CreateBroModel } from '../../src/models/CreateBroModel'
 import { UpdateBroModel } from '../../src/models/UpdateBroModel'
 import { db } from '../../src/db/db'
+import { HTTP_STATUSES } from '../../src/utils'
 
 describe('/brothers', () => {
 

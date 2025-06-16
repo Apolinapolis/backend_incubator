@@ -4,29 +4,24 @@ import { GetBroModel } from '../src/models/GetBroQueryModel'
 import { UpdateBroModel } from '../src/models/UpdateBroModel'
 import { ViewBroModel } from '../src/models/ViewBroModel'
 import { URIparamId } from '../src/models/URIParamIdModel'
-import { Response, Express } from 'express'
+import { Response} from 'express'
+import { HTTP_STATUSES } from '../src/utils'
+import express from 'express'
 
 
-export const HTTP_STATUSES = {
-  OK_200: 200,
-  CREATED_201: 201,
-  NO_CONTENT_204: 204,
-
-  BAD_REQUEST_400: 400,
-  NOT_FOUND_404: 404,
+const getBroViewModel = (bro: DataBaseType): ViewBroModel => {
+    return {
+        id: bro.id,
+        title: bro.title
+    }
 }
 
-export const addBrothersRoutes = (app: Express, db:DBType) => {
+export const getBrothersRoutes = (db:DBType) => {
 
-    const getBroViewModel = (bro: DataBaseType): ViewBroModel => {
-        return {
-            id: bro.id,
-            title: bro.title
-        }
-    }
+    const router = express.Router()
 
 
-    app.get('/brothers', (req: RequestWithQuery<GetBroModel>, res: Response<ViewBroModel[]>) => {
+    router.get('/', (req: RequestWithQuery<GetBroModel>, res: Response<ViewBroModel[]>) => {
 
         let foundCourses = db.courses
         if (req.query.title) {
@@ -35,7 +30,7 @@ export const addBrothersRoutes = (app: Express, db:DBType) => {
         res.json(foundCourses.map(getBroViewModel))
     })
 
-    app.get('/brothers/:id', (req: RequestWithParams<URIparamId>, res: Response<ViewBroModel>) => {
+    router.get('/:id', (req: RequestWithParams<URIparamId>, res: Response<ViewBroModel>) => {
         const foundCourse = db.courses.find(c => c.id === +req.params.id)
 
         if (!foundCourse) {
@@ -46,7 +41,7 @@ export const addBrothersRoutes = (app: Express, db:DBType) => {
         res.json({ id: foundCourse.id, title: foundCourse.title })
     })
 
-    app.post('/brothers', (req: RequestWithBody<CreateBroModel>, res: Response<ViewBroModel>) => {
+    router.post('/', (req: RequestWithBody<CreateBroModel>, res: Response<ViewBroModel>) => {
 
         if (!req.body.title) {
             res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
@@ -63,7 +58,7 @@ export const addBrothersRoutes = (app: Express, db:DBType) => {
         res.status(HTTP_STATUSES.CREATED_201).json(createdCourse)
     })
 
-    app.put('/brothers/:id', (req: RequestWithParamsAndBody<URIparamId, UpdateBroModel>, res) => {
+    router.put('/:id', (req: RequestWithParamsAndBody<URIparamId, UpdateBroModel>, res) => {
 
         const bro = db.courses.find(c => c.id === +req.params.id)
 
@@ -75,7 +70,7 @@ export const addBrothersRoutes = (app: Express, db:DBType) => {
         }
     })
 
-    app.delete('/brothers/:id', (req: RequestWithParams<URIparamId>, res) => {
+    router.delete('/:id', (req: RequestWithParams<URIparamId>, res) => {
         if (!db.courses.find(c => c.id === +req.params.id)) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
             return
@@ -84,5 +79,7 @@ export const addBrothersRoutes = (app: Express, db:DBType) => {
 
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     })
+
+    return router
 
 }
