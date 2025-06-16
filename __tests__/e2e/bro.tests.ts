@@ -1,8 +1,8 @@
 import request from 'supertest'
-import { app, db, HTTP_STATUSES } from '../../src'
+import { app, HTTP_STATUSES } from '../../src/app'
 import { CreateBroModel } from '../../src/models/CreateBroModel'
 import { UpdateBroModel } from '../../src/models/UpdateBroModel'
-import { title } from 'process'
+import { db } from '../../src/db/db'
 
 describe('/brothers', () => {
 
