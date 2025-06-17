@@ -7,6 +7,7 @@ import { URIparamId } from '../src/models/URIParamIdModel'
 import { Response} from 'express'
 import { HTTP_STATUSES } from '../src/utils'
 import express from 'express'
+import { title } from 'process'
 
 
 const getBroViewModel = (bro: DataBaseType): ViewBroModel => {
@@ -79,6 +80,25 @@ export const getBrothersRoutes = (db:DBType) => {
 
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     })
+
+    return router
+
+}
+
+
+export const getIntrestingRouter = (db:DBType) => {
+
+    const router = express.Router()
+
+        router.get('/books', (req: RequestWithQuery<GetBroModel>, res) => {
+        res.json({'title':'books'})
+    })
+
+    router.get('/:id', (req: RequestWithParams<URIparamId>, res) => {
+
+        res.json({ title: 'request params id' + req.params.id })
+    })
+
 
     return router
 
