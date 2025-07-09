@@ -1,24 +1,16 @@
-import { DataBaseType, DBType, RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from '../types'
+import express from 'express'
+import { Response } from 'express'
+import { RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from '../types'
 import { CreateBroModel } from '../models/CreateBroModel'
 import { GetBroModel } from '../models/GetBroQueryModel'
 import { UpdateBroModel } from '../models/UpdateBroModel'
 import { ViewBroModel } from '../models/ViewBroModel'
 import { URIparamId } from '../models/URIParamIdModel'
-import { Response} from 'express'
 import { HTTP_STATUSES } from '../utils'
-import express from 'express'
 import { brothersRepoditory } from '../repositories/bro_repo'
 
 
-const getBroViewModel = (bro: DataBaseType): ViewBroModel => {
-    return {
-        id: bro.id,
-        title: bro.title,
-        age: bro.age
-    }
-}
-
-export const getBrothersRoutes = (db:DBType) => {
+export const getBrothersRoutes = () => {
 
     const router = express.Router()
 
@@ -58,17 +50,16 @@ export const getBrothersRoutes = (db:DBType) => {
         } else {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         }
-
     })
 
     router.delete('/:id', (req: RequestWithParams<URIparamId>, res) => {
-        if (!db.courses.find(c => c.id === +req.params.id)) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
-            return
-        }
-        db.courses = db.courses.filter(c => c.id !== +req.params.id)
+        const broForDelete = brothersRepoditory.deleteBro(+req.params.id)
 
-        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+        if (!broForDelete) {
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+        } else {
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204).send(brothersRepoditory.getBroById(+req.params.id))
+        }
     })
 
     return router
@@ -76,7 +67,7 @@ export const getBrothersRoutes = (db:DBType) => {
 }
 
 
-export const getIntrestingRouter = (db:DBType) => {
+export const getIntrestingRouter = () => {
 
     const router = express.Router()
 

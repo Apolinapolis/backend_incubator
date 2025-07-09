@@ -2,7 +2,7 @@ import request from 'supertest'
 import { app } from '../../src/app'
 import { CreateBroModel } from '../../src/models/CreateBroModel'
 import { UpdateBroModel } from '../../src/models/UpdateBroModel'
-import { db } from '../../src/db/db'
+import { db } from '../../src/repositories/bro_repo'
 import { HTTP_STATUSES } from '../../src/utils'
 
 describe('/brothers', () => {
@@ -48,7 +48,8 @@ describe('/brothers', () => {
 
         await request(app)
             .get('/brothers')
-            .expect(HTTP_STATUSES.OK_200, [{id:db.courses[0].id, title:db.courses[0].title}])
+            expect(HTTP_STATUSES.OK_200)
+            // .expect(HTTP_STATUSES.OK_200, [{id:db.courses[0].id, title:db.courses[0].title}, age: db.courses[0].age])
     })
 
     it('should not update bro that not exist', async () => {

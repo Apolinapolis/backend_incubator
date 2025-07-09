@@ -16,23 +16,23 @@ export const brothersRepoditory = {
   findBro(searchTerm: string | null) {
 
     if (searchTerm) {
-    let foundCourses = db.courses.filter(c => c.title.indexOf(searchTerm) > -1)
-    return foundCourses
+      let foundCourses = db.courses.filter(c => c.title.indexOf(searchTerm) > -1)
+      return foundCourses
     } else {
       return db.courses
     }
   },
 
-  getBroById(broId:number) {
+  getBroById(broId: number) {
     const foundBro = db.courses.find(b => b.id === broId)
     return foundBro
   },
 
-  createBrother(title: string) {
+  createBrother(name: string) {
 
     const createdCourse = {
       id: +(new Date()),
-      title: title,
+      title: name,
       age: Math.floor(Math.random() * 101)
     }
 
@@ -48,10 +48,16 @@ export const brothersRepoditory = {
     } else {
       return false
     }
+  },
 
+  deleteBro(id:number) {
+    if (id) {
+      db.courses = db.courses.filter(c => c.id !== +id)
+      return true
+    } else {
+      return false
+    }
   }
-
-
 
 }
 

@@ -1,6 +1,6 @@
 import express from 'express'
 
-import { db } from './db/db'
+import { db } from './repositories/bro_repo'
 import { getBrothersRoutes, getIntrestingRouter } from './routes/brothers'
 import { getTestsRouter } from './routes/tests'
 
