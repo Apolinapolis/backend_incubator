@@ -1,5 +1,4 @@
-import express from 'express'
-import { Response } from 'express'
+import express, { Request, Response } from 'express'
 import { RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from '../types'
 import { CreateBroModel } from '../models/CreateBroModel'
 import { GetBroModel } from '../models/GetBroQueryModel'
@@ -8,11 +7,15 @@ import { ViewBroModel } from '../models/ViewBroModel'
 import { URIparamId } from '../models/URIParamIdModel'
 import { HTTP_STATUSES } from '../utils'
 import { brothersRepoditory } from '../repositories/bro_repo'
+import {body} from 'express-validator'
+import { inputValidationMiddleWare } from '../middlewares/input-validation-mw'
+
 
 
 export const getBrothersRoutes = () => {
 
     const router = express.Router()
+    const titleValidation = body('title').trim().isLength({min:2, max:10}).withMessage("title length should be from two to then symbols")
 
 
     router.get('/', (req: RequestWithQuery<GetBroModel>, res: Response<ViewBroModel[]>) => {
@@ -31,17 +34,11 @@ export const getBrothersRoutes = () => {
         }
     })
 
-    router.post('/', (req: RequestWithBody<CreateBroModel>, res: any) => {
-
-        if (!req.body.title) {
-            res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
-            return
-        } else {
+    router.post('/', titleValidation, inputValidationMiddleWare, (req:RequestWithBody<CreateBroModel>, res: any) => {
             return res.status(HTTP_STATUSES.CREATED_201).send(brothersRepoditory.createBrother(req.body.title))
-        }
     })
 
-    router.put('/:id', (req: RequestWithParamsAndBody<URIparamId, UpdateBroModel>, res) => {
+    router.put('/:id', titleValidation, inputValidationMiddleWare, (req: RequestWithParamsAndBody<URIparamId, UpdateBroModel>, res) => {
         const isUpdated = brothersRepoditory.updateBrotherName(+req.params.id, req.body.title)
 
         if (isUpdated) {
@@ -66,21 +63,16 @@ export const getBrothersRoutes = () => {
 
 }
 
-
 export const getIntrestingRouter = () => {
 
     const router = express.Router()
-
         router.get('/books', (req: RequestWithQuery<GetBroModel>, res) => {
         res.json({'title':'books'})
     })
 
-    router.get('/:id', (req: RequestWithParams<URIparamId>, res) => {
-
-        res.json({ title: 'request params id' + req.params.id })
+    router.get('/:id', (req: RequestWithParams<URIparamId>, res:Response) => {
+        res.json({ title:'boom!' + req.params.id})
     })
-
-
     return router
 
 }
