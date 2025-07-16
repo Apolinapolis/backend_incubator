@@ -1,7 +1,15 @@
 import {app} from './app'
+import { runDB } from './repositories/db'
 
-const port = 3000
+const port = process.env.PORT || 3000
 
-app.listen(port, '0.0.0.0',() => {
-  console.log(`backend was started on port ${port}`)
-}) 
+
+const startApp = async () => {
+  await runDB()
+  app.listen(port, () => {
+    console.log(`backend was started on port ${port}`)
+  })
+}
+
+
+startApp()

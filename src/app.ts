@@ -5,10 +5,9 @@ import { getTestsRouter } from './routes/tests'
 
 export const app = express()
 
-
 const jsonBodyMiddleware = express.json()
-
 app.use(jsonBodyMiddleware)
+
 app.use("/bro", getBrothersRoutes())
-app.use('/__test__', getTestsRouter(db))
 app.use('/int', getIntrestingRouter())
+app.use('/__test__', getTestsRouter(db))
