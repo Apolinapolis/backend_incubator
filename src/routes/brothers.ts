@@ -6,7 +6,7 @@ import { UpdateBroModel } from '../models/UpdateBroModel'
 import { ViewBroModel } from '../models/ViewBroModel'
 import { URIparamId } from '../models/URIParamIdModel'
 import { HTTP_STATUSES } from '../utils'
-import { brothersRepoditory } from '../repositories/bro_repo'
+import { brothersRepoditory } from '../repositories/brothers_repository'
 import {body} from 'express-validator'
 import { inputValidationMiddleWare } from '../middlewares/input-validation-mw'
 
@@ -18,13 +18,13 @@ export const getBrothersRoutes = () => {
     const titleValidation = body('title').trim().isLength({min:2, max:10}).withMessage("title length should be from two to then symbols")
 
 
-    router.get('/', (req: RequestWithQuery<GetBroModel>, res: Response<ViewBroModel[]>) => {
-        const findedBro = brothersRepoditory.findBro(req.query.title?.toString())
+    router.get('/', async (req: RequestWithQuery<GetBroModel>, res: Response<ViewBroModel[]>) => {
+        const findedBro = await brothersRepoditory.findBro(req.query.title?.toString())
         res.send(findedBro)
     })
 
-    router.get('/:id', (req: RequestWithParams<URIparamId>, res: Response) => {
-        const findedBro = brothersRepoditory.getBroById(+req.params.id)
+    router.get('/:id', async (req: RequestWithParams<URIparamId>, res: Response) => {
+        const findedBro = await brothersRepoditory.getBroById(+req.params.id)
 
         if (findedBro) {
             res.json({ id: findedBro.id, title: findedBro.title })
@@ -34,12 +34,12 @@ export const getBrothersRoutes = () => {
         }
     })
 
-    router.post('/', titleValidation, inputValidationMiddleWare, (req:RequestWithBody<CreateBroModel>, res: any) => {
-            return res.status(HTTP_STATUSES.CREATED_201).send(brothersRepoditory.createBrother(req.body.title))
+    router.post('/', titleValidation, inputValidationMiddleWare, async (req:RequestWithBody<CreateBroModel>, res: any) => {
+            return res.status(HTTP_STATUSES.CREATED_201).send(await brothersRepoditory.createBrother(req.body.title))
     })
 
-    router.put('/:id', titleValidation, inputValidationMiddleWare, (req: RequestWithParamsAndBody<URIparamId, UpdateBroModel>, res) => {
-        const isUpdated = brothersRepoditory.updateBrotherName(+req.params.id, req.body.title)
+    router.put('/:id', titleValidation, inputValidationMiddleWare, async (req: RequestWithParamsAndBody<URIparamId, UpdateBroModel>, res) => {
+        const isUpdated = await brothersRepoditory.updateBrotherName(+req.params.id, req.body.title)
 
         if (isUpdated) {
             const bro = brothersRepoditory.getBroById(+req.params.id)
@@ -49,8 +49,8 @@ export const getBrothersRoutes = () => {
         }
     })
 
-    router.delete('/:id', (req: RequestWithParams<URIparamId>, res) => {
-        const broForDelete = brothersRepoditory.deleteBro(+req.params.id)
+    router.delete('/:id', async(req: RequestWithParams<URIparamId>, res) => {
+        const broForDelete = await brothersRepoditory.deleteBro(+req.params.id)
 
         if (!broForDelete) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
