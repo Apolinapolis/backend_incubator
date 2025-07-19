@@ -1,68 +1,52 @@
 import { title } from "process";
-import { DataBaseType, DBType } from "../types";
-import { client } from "./db";
-
-
-export const db: DBType = {
-  courses: [
-    { id: 1, title: 'roman', age: 35 },
-    { id: 2, title: 'sergey', age: 36 },
-    { id: 3, title: 'yurok', age: 37 },
-    { id: 4, title: 'dimon', age: 34 }
-  ]
-}
+import { DataBaseType } from "../types";
+import { brothersCollection } from "./db";
 
 
 export const brothersRepoditory = {
 
-  async findBro(searchTerm: string | null | undefined):Promise<DataBaseType[]> {
+  async findBro(name: string | null | undefined): Promise<DataBaseType[]> {
 
-    if (searchTerm) {
-      return client.db('shop').collection<DataBaseType>('girls').find({title: {$regex: title}}).toArray()
-    } else {
-      return client.db('shop').collection<DataBaseType>('girls').find({}).toArray()
+    const filter:any = {}
+
+    if (name) {
+      filter.title = { $regex: title }
     }
+
+    return brothersCollection.find(filter).toArray()
+
   },
 
-  async getBroById(broId: number):Promise<DataBaseType | null> {
-    const foundBro = db.courses.find(b => b.id === broId)
+  async getBroById(id: number): Promise<DataBaseType | null> {
+    const foundBro: DataBaseType | null = await brothersCollection.findOne({ id })
+
     if (foundBro) {
       return foundBro
     } else {
       return null
     }
+
   },
 
- async createBrother(name: string):Promise<DataBaseType> {
+  async createBrother(name: string): Promise<DataBaseType> {
 
-    const createdCourse = {
+    const CreatedBrother = {
       id: +(new Date()),
       title: name,
       age: Math.floor(Math.random() * 101)
     }
 
-    db.courses.push(createdCourse);
-    return createdCourse
+    await brothersCollection.insertOne(CreatedBrother)
+    return CreatedBrother
   },
 
   async updateBrotherName(id: number, name: string): Promise<Boolean> {
-    const bro = db.courses.find(b => b.id === id)
-    if (bro) {
-      bro.title = name
-      return true
-    } else {
-      return false
-    }
+    const result = await brothersCollection.updateOne({ id }, { $set: { title: name } })
+    return result.matchedCount === 1
   },
 
- async deleteBro(id:number):Promise<Boolean> {
-    if (id) {
-      db.courses = db.courses.filter(c => c.id !== +id)
-      return true
-    } else {
-      return false
-    }
+  async deleteBro(id: number): Promise<Boolean> {
+    const result = await brothersCollection.deleteOne({ id })
+    return result.deletedCount === 1
   }
-
 }
-
