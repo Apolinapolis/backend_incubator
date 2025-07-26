@@ -9,6 +9,7 @@ import { HTTP_STATUSES } from '../utils'
 import {body} from 'express-validator'
 import { inputValidationMiddleWare } from '../middlewares/input-validation-mw'
 import { brothersServise } from '../domain/brothers-servise'
+// import {userSevice} from '../domain/brothers-servise'
 
 
 
@@ -63,16 +64,14 @@ export const getBrothersRoutes = () => {
 
 }
 
-export const getIntrestingRouter = () => {
+// export const getIntrestingRouter = () => {
 
-    const router = express.Router()
-        router.get('/books', (req: RequestWithQuery<GetBroModel>, res) => {
-        res.json({'title':'books'})
-    })
+//     const authRouter = express.Router()
 
-    router.get('/:id', (req: RequestWithParams<URIparamId>, res:Response) => {
-        res.json({ title:'boom!' + req.params.id})
-    })
-    return router
+//         authRouter.post('/', async (req: Request, res:Response) => {
+//             const newProduct = await userSevice.createUser(req.body.login, req.body.email, req.body.password)
+//             res.status(201).send(newProduct)
+//     })
 
-}
+//     return authRouter
+// }

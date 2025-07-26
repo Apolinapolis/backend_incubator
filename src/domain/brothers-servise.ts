@@ -1,5 +1,6 @@
 import { DataBaseType } from "../types";
 import { brothersRepoditory } from "../repositories/brothers_repository"
+import bcript from 'bcryptjs'
 
 export const brothersServise = {
 
@@ -31,3 +32,24 @@ export const brothersServise = {
     return brothersRepoditory.deleteBro(id)
   }
 }
+
+// export const userSevice = {
+//   async createUser (login:string, email:string, password:string):Promise<DataBaseType> {
+//     const passwordSalt = await bcript.genSalt(10)
+//     const passwordHash = await this._generateHash(password, passwordSalt)
+//     const newUser:DataBaseType = {id:1, title:'qwr', age:1}
+//     return brothersRepoditory.createBrother(newUser)
+//   },
+//   async checkCredentials(login:string, password:string) {
+//     const user = await brothersRepoditory.findBro(login)
+//     if (!user) return false
+//     const passwordHash = await this._generateHash(password, user.passwordSalt)
+//     if (user.passwordHash !== passwordHash) return false
+//   },
+
+
+//   async _generateHash(password:string, salt:string) {
+//     const hash = await bcript.hash(password, salt)
+//     return hash
+//   }
+// }
