@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express'
+import express, { Response } from 'express'
 import { RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from '../types'
 import { CreateBroModel } from '../models/CreateBroModel'
 import { GetBroModel } from '../models/GetBroQueryModel'
@@ -6,17 +6,20 @@ import { UpdateBroModel } from '../models/UpdateBroModel'
 import { ViewBroModel } from '../models/ViewBroModel'
 import { URIparamId } from '../models/URIParamIdModel'
 import { HTTP_STATUSES } from '../utils'
-import {body} from 'express-validator'
+import { body } from 'express-validator'
 import { inputValidationMiddleWare } from '../middlewares/input-validation-mw'
 import { brothersServise } from '../domain/brothers-servise'
-// import {userSevice} from '../domain/brothers-servise'
 
 
 
-export const getBrothersRoutes = () => {
+export const broRouters = () => {
 
     const router = express.Router()
-    const titleValidation = body('title').trim().isLength({min:2, max:10}).withMessage("title length should be from two to then symbols")
+    const titleValidation = body('title').trim().isLength({ min: 2, max: 10 }).withMessage("title length should be from two to then symbols")
+
+    router.post('/', titleValidation, inputValidationMiddleWare, async (req: RequestWithBody<CreateBroModel>, res: any) => {
+        return res.status(HTTP_STATUSES.CREATED_201).send(await brothersServise.createBrother(req.body.title))
+    })
 
 
     router.get('/', async (req: RequestWithQuery<GetBroModel>, res: Response<ViewBroModel[]>) => {
@@ -35,9 +38,7 @@ export const getBrothersRoutes = () => {
         }
     })
 
-    router.post('/', titleValidation, inputValidationMiddleWare, async (req:RequestWithBody<CreateBroModel>, res: any) => {
-            return res.status(HTTP_STATUSES.CREATED_201).send(await brothersServise.createBrother(req.body.title))
-    })
+
 
     router.put('/:id', titleValidation, inputValidationMiddleWare, async (req: RequestWithParamsAndBody<URIparamId, UpdateBroModel>, res) => {
         const isUpdated = await brothersServise.updateBrotherName(+req.params.id, req.body.title)
@@ -50,28 +51,14 @@ export const getBrothersRoutes = () => {
         }
     })
 
-    router.delete('/:id', async(req: RequestWithParams<URIparamId>, res) => {
+    router.delete('/:id', async (req: RequestWithParams<URIparamId>, res) => {
         const broForDelete = await brothersServise.deleteBro(+req.params.id)
 
         if (!broForDelete) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         } else {
-        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204).send(brothersServise.getBroById(+req.params.id))
+            res.sendStatus(HTTP_STATUSES.NO_CONTENT_204).send(brothersServise.getBroById(+req.params.id))
         }
     })
-
     return router
-
 }
-
-// export const getIntrestingRouter = () => {
-
-//     const authRouter = express.Router()
-
-//         authRouter.post('/', async (req: Request, res:Response) => {
-//             const newProduct = await userSevice.createUser(req.body.login, req.body.email, req.body.password)
-//             res.status(201).send(newProduct)
-//     })
-
-//     return authRouter
-// }
