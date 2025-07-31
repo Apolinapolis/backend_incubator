@@ -1,35 +1,30 @@
 import { title } from "process";
-import { DataBaseType } from "../types";
+import { ObjectId } from "mongodb";
+import { UserDBType } from "../types";
 import { brothersCollection } from "./db";
 
 
 export const brothersRepoditory = {
 
-  async findBro(name: string | null | undefined): Promise<DataBaseType[]> {
-    const filter:any = {}
-    
-    if (name) {
-      filter.title = { $regex: title }
-    }
-    return brothersCollection.find(filter).toArray()
+  async getBrothers(): Promise<UserDBType[]> {
+    return brothersCollection.find({}).toArray()
   },
 
-  async getBroById(id: number): Promise<DataBaseType | null> {
-    const foundBro: DataBaseType | null = await brothersCollection.findOne({ id })
-    return foundBro
+  async getBroById(id: ObjectId): Promise<UserDBType | null> {
+    return brothersCollection.findOne({ id })
   },
 
-  async createBrother(NewBrother: DataBaseType): Promise<DataBaseType> {
-    await brothersCollection.insertOne(NewBrother)
-    return NewBrother
+  async createBrother(newBrother: UserDBType): Promise<UserDBType> {
+    const result = brothersCollection.insertOne(newBrother)
+    return result
   },
 
-  async updateBrotherName(id: number, name: string): Promise<Boolean> {
-    const result = await brothersCollection.updateOne({ id }, { $set: { title: name } })
+  async updateBro(id:ObjectId, userName:string, bio:string): Promise<Boolean> {
+    const result = await brothersCollection.updateOne({ id }, { $set: { userName, bio } })
     return result.matchedCount === 1
   },
 
-  async deleteBro(id: number): Promise<Boolean> {
+  async deleteBro(id: ObjectId): Promise<Boolean> {
     const result = await brothersCollection.deleteOne({ id })
     return result.deletedCount === 1
   }

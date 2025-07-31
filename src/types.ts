@@ -1,14 +1,7 @@
-import {Request} from 'express'
+import { WithId } from 'mongodb'
 
-export type DataBaseType = {
-  id: number
-  title: string
-  age: number
-}
-export type DBType = { courses: DataBaseType[] }
-
-
-export type RequestWithBody<T>= Request<{},{},T>
-export type RequestWithQuery<T>= Request<{},{},{},T>
-export type RequestWithParams<T>= Request<T>
-export type RequestWithParamsAndBody<T,B>= Request<T,{},B>
+export type UserDBType = WithId<{
+  userName:string
+  bio:string
+  addedAt:Date
+}>
