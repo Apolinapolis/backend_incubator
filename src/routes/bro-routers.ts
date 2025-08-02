@@ -11,7 +11,7 @@ import mongoose from 'mongoose'
 export const broRouters = () => {
 
     const router = express.Router()
-    const titleValidation = body('userName').trim().isLength({ min: 2, max: 10 }).withMessage("userName length should be from two to then symbols")
+    const titleValidation = body('userName').trim().isLength({ min: 2, max: 100 }).withMessage("userName length should be more then two symbols")
 
     router.post('/', titleValidation, inputValidationMiddleWare,
         async (req: Request<{}, {}, { userName:string, bio:string }>, res:Response) => {
@@ -21,7 +21,7 @@ export const broRouters = () => {
 
     router.put('/:id', titleValidation, inputValidationMiddleWare,
         async (req: Request<{ id: string }, { userName: string, bio: string }>, res: Response) => {
-            const isUpdated = await brothersServise.updateBro(new mongoose.Types.ObjectId(req.params.id), req.body.bio, req.body.userName) // check the order updateBre params
+            const isUpdated = await brothersServise.updateBro(new mongoose.Types.ObjectId(req.params.id), req.body.userName, req.body.bio,)
 
             if (isUpdated) {
                 res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)

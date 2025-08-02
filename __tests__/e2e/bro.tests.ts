@@ -2,7 +2,7 @@ import request from 'supertest'
 import { app } from '../../src/app'
 import { CreateBroModel } from '../../src/models/CreateBroModel'
 import { UpdateBroModel } from '../../src/models/UpdateBroModel'
-import { brothersCollection } from '../../src/repositories/db'
+import { BrotherModel } from '../../src/repositories/db'
 import { HTTP_STATUSES } from '../../src/utils'
 
 // describe('/brothers', () => {
