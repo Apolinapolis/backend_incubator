@@ -14,8 +14,7 @@ export const brothersRepoditory = {
   },
 
   async createBrother(newBrother: UserDBType): Promise<UserDBType> {
-    const result = BrotherModel.insertOne(newBrother)
-    return result
+    return BrotherModel.insertOne(newBrother)
   },
 
   async updateBro(id:ObjectId, userName:string, bio:string): Promise<Boolean> {

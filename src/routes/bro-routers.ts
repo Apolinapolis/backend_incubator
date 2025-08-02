@@ -14,7 +14,7 @@ export const broRouters = () => {
     const titleValidation = body('userName').trim().isLength({ min: 2, max: 100 }).withMessage("userName length should be more then two symbols")
 
     router.post('/', titleValidation, inputValidationMiddleWare,
-        async (req: Request<{}, {}, { userName:string, bio:string }>, res:Response) => {
+        async (req: Request<{}, {}, { userName: string, bio: string }>, res: Response) => {
             const newUser = await brothersServise.createBrother(req.body.userName, req.body.bio)
             res.status(HTTP_STATUSES.CREATED_201).send(newUser)
         })
@@ -31,7 +31,7 @@ export const broRouters = () => {
         })
 
     router.get('/',
-        async (req: Request, res: Response) => {
+        async (req:Request, res: Response) => {
             const findedBro = await brothersServise.getBrothers()
             res.send(findedBro)
         })
@@ -51,10 +51,10 @@ export const broRouters = () => {
         async (req: Request<{ id: string }>, res: Response) => {
             const isBroExist = await brothersServise.getBroById(new mongoose.Types.ObjectId(req.params.id))
             if (isBroExist) {
-                res.sendStatus(HTTP_STATUSES.NO_CONTENT_204).send(isBroExist)
                 brothersServise.deleteBro(new mongoose.Types.ObjectId(req.params.id))
+                res.status(HTTP_STATUSES.OK_200).send({ message: `${isBroExist.userName} was deleted` })
             } else {
-                res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+                res.status(HTTP_STATUSES.NOT_FOUND_404)
             }
         })
     return router
