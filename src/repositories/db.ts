@@ -1,21 +1,23 @@
-import { MongoClient } from "mongodb"
-import { DataBaseType } from "../types"
+import { UserDBType } from "../types"
+import mongoose from "mongoose"
 
 
-const mongoUri = process.env.mongoURI || "mongodb://127.0.0.1:27017"
+const mongoUri = process.env.mongoURI || "mongodb://127.0.0.1:27017/mongoose-example"
+const { Schema } = mongoose;
+const brotherSchema = new Schema<UserDBType>({
+  userName: String,
+  bio: String,
+  addedAt: Date
+});
 
-export const client = new MongoClient(mongoUri)
-
-const db = client.db('brothers_DB')
-export const brothersCollection = db.collection<DataBaseType>('brothers')
+export const BrotherModel = mongoose.model('asd', brotherSchema)
 
 export async function runDB() {
     try {
-        await client.connect()
-        await client.db('bro_repo').command({ping:1})
+        await mongoose.connect(mongoUri);
         console.log('connected successfully to mongo server')
     } catch {
         console.log("can't connected to db")
-        await client.close()
+        await mongoose.disconnect()
     }
 }

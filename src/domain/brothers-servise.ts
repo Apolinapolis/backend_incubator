@@ -17,7 +17,7 @@ export const brothersServise = {
    return brothersRepoditory.createBrother(newBrother)
   },
 
-  async updateBrotherName(id: ObjectId, userName: string, bio:string): Promise<Boolean> {
+  async updateBro(id: ObjectId, userName: string, bio:string): Promise<Boolean> {
     return brothersRepoditory.updateBro(id, userName, bio)
   },
 
