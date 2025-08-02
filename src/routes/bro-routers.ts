@@ -52,7 +52,7 @@ export const broRouters = () => {
             const isBroExist = await brothersServise.getBroById(new mongoose.Types.ObjectId(req.params.id))
             if (isBroExist) {
                 brothersServise.deleteBro(new mongoose.Types.ObjectId(req.params.id))
-                res.status(HTTP_STATUSES.OK_200).send({ message: `${isBroExist.userName} was deleted` })
+                res.status(HTTP_STATUSES.OK_200).send({ message: `${isBroExist.userName} was deleted!` })
             } else {
                 res.status(HTTP_STATUSES.NOT_FOUND_404)
             }
