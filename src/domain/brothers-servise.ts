@@ -13,7 +13,13 @@ export const brothersServise = {
   },
 
   async createBrother(userName:string, bio:string): Promise<UserDBType> {
-    const newBrother = { _id: new ObjectId(), userName, bio, addedAt: new Date()}
+    const newBrother:UserDBType = { 
+      _id: new ObjectId(), 
+      userName, 
+      bio, 
+      addedAt: new Date(), 
+      avatars:[{src:"https://image.jpeg", addedAt:new Date()}] 
+    }
    return brothersRepoditory.createBrother(newBrother)
   },
 
