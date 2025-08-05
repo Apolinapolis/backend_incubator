@@ -29,5 +29,9 @@ export const brothersServise = {
 
   async deleteBro(id:ObjectId): Promise<Boolean> {
     return brothersRepoditory.deleteBro(id)
+  },
+
+  async cleanDB(): Promise<number> {
+    return brothersRepoditory.cleanDB()
   }
 }

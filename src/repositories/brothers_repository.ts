@@ -10,20 +10,25 @@ export const brothersRepoditory = {
   },
 
   async getBroById(id: ObjectId): Promise<UserDBType | null> {
-    return BrotherModel.findOne({ _id:id })
+    return BrotherModel.findOne({ _id: id })
   },
 
   async createBrother(newBrother: UserDBType): Promise<UserDBType> {
     return BrotherModel.insertOne(newBrother)
   },
 
-  async updateBro(id:ObjectId, userName:string, bio:string): Promise<Boolean> {
-    const result = await BrotherModel.updateOne({ _id:id }, { $set: { userName, bio } })
+  async updateBro(id: ObjectId, userName: string, bio: string): Promise<Boolean> {
+    const result = await BrotherModel.updateOne({ _id: id }, { $set: { userName, bio } })
     return result.matchedCount === 1
   },
 
   async deleteBro(id: ObjectId): Promise<Boolean> {
-    const result = await BrotherModel.deleteOne({ _id:id })
+    const result = await BrotherModel.deleteOne({ _id: id })
     return result.deletedCount === 1
+  },
+
+  async cleanDB(): Promise<number> {
+    const result = await BrotherModel.deleteMany({})
+    return result.deletedCount || 0
   }
 }

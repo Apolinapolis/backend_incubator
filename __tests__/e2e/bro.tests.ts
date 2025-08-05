@@ -1,14 +1,14 @@
-import request from 'supertest'
-import { app } from '../../src/app'
-import { CreateBroModel } from '../../src/models/CreateBroModel'
-import { UpdateBroModel } from '../../src/models/UpdateBroModel'
-import { BrotherModel } from '../../src/repositories/db'
-import { HTTP_STATUSES } from '../../src/utils'
+// import request from 'supertest'
+// import { app } from '../../src/app'
+// import { CreateBroModel } from '../../src/models/CreateBroModel'
+// import { UpdateBroModel } from '../../src/models/UpdateBroModel'
+// import { BrotherModel } from '../../src/repositories/db'
+// import { HTTP_STATUSES } from '../../src/utils'
 
-// describe('/brothers', () => {
+// describe('/bro', () => {
 
 //     beforeAll(async () => {
-//         await request(app).delete('/__test__/data')
+//         await request(app).delete('/all')
 //     })
 
 //     it('should return 200 ok and empty array', async () => {

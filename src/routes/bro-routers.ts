@@ -31,7 +31,7 @@ export const broRouters = () => {
         })
 
     router.get('/',
-        async (req:Request, res: Response) => {
+        async (req: Request, res: Response) => {
             const findedBro = await brothersServise.getBrothers()
             res.send(findedBro)
         })
@@ -47,6 +47,17 @@ export const broRouters = () => {
             }
         })
 
+    router.delete('/all',
+        async (req: Request, res: Response) => {
+            try {
+                const deletedCount = await brothersServise.cleanDB()
+                res.status(HTTP_STATUSES.OK_200).send({ message: `Deleted ${deletedCount} bros. Database is clean.` })
+            } catch (error) {
+                console.error("Failed to clean DB:", error);
+                res.sendStatus(HTTP_STATUSES.SERVER_ERROR_500);
+            }
+        })
+
     router.delete('/:id',
         async (req: Request<{ id: string }>, res: Response) => {
             const isBroExist = await brothersServise.getBroById(new mongoose.Types.ObjectId(req.params.id))
@@ -57,5 +68,6 @@ export const broRouters = () => {
                 res.status(HTTP_STATUSES.NOT_FOUND_404)
             }
         })
+
     return router
 }
