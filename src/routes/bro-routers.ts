@@ -13,23 +13,6 @@ export const broRouters = () => {
     const router = express.Router()
     const titleValidation = body('userName').trim().isLength({ min: 2, max: 100 }).withMessage("userName length should be more then two symbols")
 
-    router.post('/', titleValidation, inputValidationMiddleWare,
-        async (req: Request<{}, {}, { userName: string, bio: string }>, res: Response) => {
-            const newUser = await brothersServise.createBrother(req.body.userName, req.body.bio)
-            res.status(HTTP_STATUSES.CREATED_201).send(newUser)
-        })
-
-    router.put('/:id', titleValidation, inputValidationMiddleWare,
-        async (req: Request<{ id: string }, { userName: string, bio: string }>, res: Response) => {
-            const isUpdated = await brothersServise.updateBro(new mongoose.Types.ObjectId(req.params.id), req.body.userName, req.body.bio,)
-
-            if (isUpdated) {
-                res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
-            } else {
-                res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
-            }
-        })
-
     router.get('/',
         async (req: Request, res: Response) => {
             const findedBro = await brothersServise.getBrothers()
@@ -44,6 +27,23 @@ export const broRouters = () => {
             } else {
                 res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
                 return
+            }
+        })
+
+    router.post('/', titleValidation, inputValidationMiddleWare,
+        async (req: Request<{}, {}, { userName: string, bio: string }>, res: Response) => {
+            const newUser = await brothersServise.createBrother(req.body.userName, req.body.bio)
+            res.status(HTTP_STATUSES.CREATED_201).send(newUser)
+        })
+
+    router.put('/:id', titleValidation, inputValidationMiddleWare,
+        async (req: Request<{ id: string }, { userName: string, bio: string }>, res: Response) => {
+            const isUpdated = await brothersServise.updateBro(new mongoose.Types.ObjectId(req.params.id), req.body.userName, req.body.bio,)
+
+            if (isUpdated) {
+                res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+            } else {
+                res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
             }
         })
 

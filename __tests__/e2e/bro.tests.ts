@@ -1,94 +1,130 @@
-// import request from 'supertest'
-// import { app } from '../../src/app'
-// import { CreateBroModel } from '../../src/models/CreateBroModel'
-// import { UpdateBroModel } from '../../src/models/UpdateBroModel'
-// import { BrotherModel } from '../../src/repositories/db'
-// import { HTTP_STATUSES } from '../../src/utils'
+import request from 'supertest'
+import { ObjectId } from 'mongodb'
+import { app } from '../../src/app'
+import { mongoUri } from '../../src/repositories/db'
+import { HTTP_STATUSES } from '../../src/utils'
+import mongoose from 'mongoose'
+import { CreateBroModel, UserDBType } from '../../src/types'
 
-// describe('/bro', () => {
+let firstBro:UserDBType
+const nonExistingId = new ObjectId().toString()
 
-//     beforeAll(async () => {
-//         await request(app).delete('/all')
-//     })
+describe('/bro', () => {
 
-//     it('should return 200 ok and empty array', async () => {
-//         await request(app)
-//             .get('/brothers')
-//             .expect(HTTP_STATUSES.OK_200, [])
-//     })
+  beforeAll(async () => {
+    await mongoose.connect(mongoUri)
+    await request(app).delete('/bro/all')
+  })
+  beforeAll(async () => {
+    await request(app).delete('/bro/all')
+  })
 
-//     it('should return 404 for not existing brother', async () => {
-//         await request(app)
-//             .get('/brothers/93939')
-//             .expect(HTTP_STATUSES.NOT_FOUND_404)
-//     })
+  it('should return 200 ok and empty array', async () => {
+    await request(app)
+      .get('/bro')
+      .expect(HTTP_STATUSES.OK_200, [])
+  })
 
-//     it('should return 400 with empty payload', async () => {
+  it('should return 404 for non-existing brother', async () => {
 
-//         const data: CreateBroModel = { title: '' }
+    await request(app)
+      .get(`/bro/${nonExistingId}`)
+      .expect(HTTP_STATUSES.NOT_FOUND_404)
+  })
 
-//         await request(app)
-//             .post('/brothers')
-//             .send(data)
-//             .expect(HTTP_STATUSES.BAD_REQUEST_400)
+  it('should return 400 without user name', async () => {
 
-//         await request(app)
-//             .get('/brothers')
-//             .expect(HTTP_STATUSES.OK_200, [])
-//     })
+    const testUser: CreateBroModel = { userName: "", bio: "golden mine" }
 
-//     it('should create bro with correct input data', async () => {
+    await request(app)
+      .post('/bro')
+      .send(testUser)
+      .expect(HTTP_STATUSES.BAD_REQUEST_400)
 
-//         const data: CreateBroModel = { title: 'Konstantin' }
+    await request(app)
+      .get('/bro')
+      .expect(HTTP_STATUSES.OK_200, [])
+  })
 
-//         await request(app)
-//             .post('/brothers/')
-//             .send(data)
-//             .expect(HTTP_STATUSES.CREATED_201)
+  it('should create bro with correct input data', async () => {
 
-//         await request(app)
-//             .get('/brothers')
-//             expect(HTTP_STATUSES.OK_200)
-//             expect(HTTP_STATUSES.OK_200, [{id:db.courses[0].id, title:db.courses[0].title}, age: db.courses[0].age])
-//     })
+    const testUser: CreateBroModel = { userName: "Довганюк", bio: "golden mine" }
 
-//     it('should not update bro that not exist', async () => {
+    await request(app)
+      .post('/bro')
+      .send(testUser)
+      .expect(HTTP_STATUSES.CREATED_201)
 
-//         const data: UpdateBroModel = { title: 'correct title' }
+    const getAllResponse = await request(app)
+      .get('/bro')
+      .expect(HTTP_STATUSES.OK_200)
 
-//         await request(app)
-//             .put('/brothers/' + 2)
-//             .send(data)
-//             .expect(HTTP_STATUSES.NOT_FOUND_404)
-//     })
+    firstBro = getAllResponse.body[0] // обновляю данные глобально
 
-//     it('should update bro with correct input data', async () => {
+    expect(getAllResponse.body).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          _id: expect.any(String),
+          userName: testUser.userName,
+          bio: testUser.bio,
+          addedAt: expect.any(String),
+          avatars: [
+            {
+              _id: expect.any(String),
+              addedAt: expect.any(String),
+              src: expect.any(String)
+            }
+          ]
+        }
+        )
+      ]
+      ))
+  })
 
-//         const data: UpdateBroModel = { title: 'Updated_BRO' }
-//         await request(app)
-//             .put('/brothers/' + db.courses[0].id)
-//             .send(data)
-//             .expect(HTTP_STATUSES.NO_CONTENT_204)
-//     })
+  it('should update bro with correct input data', async () => {
 
+    const updatedUser: CreateBroModel = { userName: "Измененный", bio: "Данные были изменены при тесте" }
 
-//     it('should delete exitsting BRO', async () => {
-//         await request(app)
-//             .delete('/brothers/' + db.courses[0].id)
-//             .expect(HTTP_STATUSES.NO_CONTENT_204)
+    await request(app)
+      .put(`/bro/${firstBro._id}`)
+      .send(updatedUser)
+      .expect(HTTP_STATUSES.NO_CONTENT_204)
 
-//         await request(app)
-//             .get('/brothers')
-//             .expect(HTTP_STATUSES.OK_200, [])
-//     })
+    // проверяю, что изменения применились
+    const getAllResponse = await request(app)
+      .get('/bro')
+      .expect(HTTP_STATUSES.OK_200)
 
-//     it('should return 404 if nothink to delete', async () => {
-//         await request(app)
-//             .delete('/brothers/1')
-//             .expect(HTTP_STATUSES.NOT_FOUND_404)
+    firstBro = getAllResponse.body[0] // обновляю данные глобально
+    expect(firstBro).toMatchObject({
+      userName: updatedUser.userName,
+      bio: updatedUser.bio
+    })
+  })
 
-//         await request(app)
-//             .get('/brothers')
-//             .expect(HTTP_STATUSES.OK_200, [])
-//     })
-// }) 
+// TODO вынести payload глобально
+
+  it('should delete exitsting BRO', async () => {
+      await request(app)
+          .delete(`/bro/${firstBro._id}`)
+          .expect(HTTP_STATUSES.OK_200)
+
+      await request(app)
+          .get('/bro')
+          .expect(HTTP_STATUSES.OK_200, [])
+  })
+
+  it('should return 404 if nothink to delete', async () => {
+      await request(app)
+          .delete('/bro'+ nonExistingId)
+          .expect(HTTP_STATUSES.NOT_FOUND_404)
+
+      await request(app)
+          .get('/bro')
+          .expect(HTTP_STATUSES.OK_200, [])
+  })
+
+  afterAll(async () => {
+    await mongoose.disconnect()
+  })
+})

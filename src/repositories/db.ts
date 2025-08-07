@@ -2,7 +2,7 @@ import { UserDBType, AvatarDBType } from "../types"
 import mongoose from "mongoose"
 
 
-const mongoUri = process.env.mongoURI || "mongodb://127.0.0.1:27017/mongoose-example"
+export const mongoUri = process.env.mongoURI || "mongodb://127.0.0.1:27017/mongoose-example"
 const { Schema } = mongoose;
 
 const avatarSchema = new Schema<AvatarDBType>({
