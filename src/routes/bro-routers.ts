@@ -11,7 +11,8 @@ import mongoose from 'mongoose'
 export const broRouters = () => {
 
     const router = express.Router()
-    const titleValidation = body('userName').trim().isLength({ min: 2, max: 100 }).withMessage("userName length should be more then two symbols")
+    const titleValidation = body('userName').trim().isLength({ min: 2, max: 100 })
+    .withMessage("userName length should be more then one and less then 100 symbols")
 
     router.get('/',
         async (req: Request, res: Response) => {
